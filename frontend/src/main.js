@@ -1,5 +1,3 @@
-import './style.css'
-
 /**
  * main.js — Application Entry Point
  *
