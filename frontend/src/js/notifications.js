@@ -128,12 +128,12 @@ export function notifyFromError(error) {
   // Provide specific messages for known codes
   const codeMessages = {
     // API errors
-    INVALID_KEY:    "Invalid API key. Open js/config.js and add your Gemini API key.",
+    INVALID_KEY:    "Invalid API key. Open js/config.js and add your Mistral API key.",
     RATE_LIMITED:   "Rate limit hit. Wait a moment then try again.",
     NETWORK_ERROR:  "Network error. Check your connection and try again.",
     TIMEOUT:        "Request timed out. The API may be busy — please retry.",
-    EMPTY_RESPONSE: "Gemini returned an empty response. Please try again.",
-    SERVER_ERROR:   "Gemini API is having issues. Please try again shortly.",
+    EMPTY_RESPONSE: "Mistral returned an empty response. Please try again.",
+    SERVER_ERROR:   "Mistral API is having issues. Please try again shortly.",
     // PDF errors
     WRONG_TYPE:     "Please upload a valid PDF file.",
     TOO_LARGE:      "PDF is too large. Maximum file size is 5 MB.",
