@@ -6,6 +6,19 @@ Built with Vanilla JS ES Modules, Mistral AI API, pdf.js, and axios.
 
 ---
 
+Live link : https://covercraftai.netlify.app/
+
+Screenshots--
+<img width="1918" height="880" alt="Screenshot 2026-05-08 162723" src="https://github.com/user-attachments/assets/78144beb-3c30-4db4-9641-1c0e88a4d695" />
+
+<img width="1914" height="883" alt="Screenshot 2026-05-08 162733" src="https://github.com/user-attachments/assets/cc3caf6f-f61c-4f10-bcd3-e5bf3c6cad29" />
+
+<img width="1914" height="887" alt="Screenshot 2026-05-08 162757" src="https://github.com/user-attachments/assets/b2aa9d36-e260-4774-af32-e9e9f5f0773c" />
+
+<img width="1919" height="540" alt="Screenshot 2026-05-08 162806" src="https://github.com/user-attachments/assets/b5535ae6-3c22-48ab-9d33-f956dcbbca44" />
+
+
+
 ## Setup
 
 ### 1. Get Your Mistral API Key
