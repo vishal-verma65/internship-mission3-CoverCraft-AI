@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoverCraft AI — Intelligent Cover Letter Generator</title>
+  <meta name="description" content="Generate personalized, ATS-friendly cover letters powered by Gemini AI in seconds." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+
+  <div id="notification-container" aria-live="polite" aria-atomic="true"></div>
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme" title="Toggle dark/light mode">
+    <span class="theme-icon sun">☀️</span>
+    <span class="theme-icon moon">🌙</span>
+  </button>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="hero">
+    <!-- Floating blobs -->
+    <div class="blob blob-1" aria-hidden="true"></div>
+    <div class="blob blob-2" aria-hidden="true"></div>
+    <div class="blob blob-3" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <div class="hero-badge">✦ Powered by Gemini AI</div>
+      <h1 class="hero-title">
+        Write cover letters<br />
+        <em>worth reading.</em>
+      </h1>
+      <p class="hero-subtitle">
+        Personalized, ATS-friendly cover letters crafted in seconds.<br />
+        Upload your resume, describe the role — we handle the rest.
+      </p>
+      <a href="#generator" class="cta-btn" id="hero-cta">
+        <span>Start Writing</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <div class="hero-stats">
+        <div class="stat"><strong>10k+</strong><span>Letters Generated</span></div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat"><strong>98%</strong><span>ATS Pass Rate</span></div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat"><strong>&lt; 30s</strong><span>Generation Time</span></div>
+      </div>
+
+      <canvas id="particles-canvas" aria-hidden="true"></canvas>
+    </div>
+  </section>
+
+  <!-- MAIN GENERATOR SECTION -->
+  <section class="generator-section" id="generator">
+    <div class="container">
+
+      <div class="section-header">
+        <span class="section-label">The Generator</span>
+        <h2 class="section-title">Fill in your details</h2>
+        <p class="section-desc">The more context you provide, the more personalized your letter will be.</p>
+      </div>
+
+      <div class="generator-layout">
+
+        <!-- LEFT: FORM -->
+        <div class="form-panel">
+          <form id="cover-letter-form" novalidate>
+
+            <!-- Personal Info -->
+            <fieldset class="form-group-set">
+              <legend class="fieldset-legend">Personal Info</legend>
+              <div class="form-row two-col">
+                <div class="form-group">
+                  <label for="full-name" class="form-label">Full Name <span class="required" aria-hidden="true">*</span></label>
+                  <input type="text" id="full-name" name="fullName" class="form-input" placeholder="Jane Doe" autocomplete="name" aria-required="true" />
+                  <span class="field-error" id="full-name-error" role="alert"></span>
+                </div>
+                <div class="form-group">
+                  <label for="email" class="form-label">Email <span class="required" aria-hidden="true">*</span></label>
+                  <input type="email" id="email" name="email" class="form-input" placeholder="jane@example.com" autocomplete="email" aria-required="true" />
+                  <span class="field-error" id="email-error" role="alert"></span>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Job Info -->
+            <fieldset class="form-group-set">
+              <legend class="fieldset-legend">Job Details</legend>
+              <div class="form-row two-col">
+                <div class="form-group">
+                  <label for="job-role" class="form-label">Job Role <span class="required" aria-hidden="true">*</span></label>
+                  <input type="text" id="job-role" name="jobRole" class="form-input" placeholder="Senior Product Designer" aria-required="true" />
+                  <span class="field-error" id="job-role-error" role="alert"></span>
+                </div>
+                <div class="form-group">
+                  <label for="company-name" class="form-label">Company Name <span class="required" aria-hidden="true">*</span></label>
+                  <input type="text" id="company-name" name="companyName" class="form-input" placeholder="Acme Corp" aria-required="true" />
+                  <span class="field-error" id="company-name-error" role="alert"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" id="experience-label">Experience Level <span class="required" aria-hidden="true">*</span></label>
+                <div class="segmented-control" role="group" aria-labelledby="experience-label">
+                  <label class="seg-option">
+                    <input type="radio" name="experienceLevel" value="Entry-Level" />
+                    <span>Entry</span>
+                  </label>
+                  <label class="seg-option">
+                    <input type="radio" name="experienceLevel" value="Mid-Level" checked />
+                    <span>Mid</span>
+                  </label>
+                  <label class="seg-option">
+                    <input type="radio" name="experienceLevel" value="Senior" />
+                    <span>Senior</span>
+                  </label>
+                  <label class="seg-option">
+                    <input type="radio" name="experienceLevel" value="Executive" />
+                    <span>Executive</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" id="tone-label">Tone <span class="required" aria-hidden="true">*</span></label>
+                <div class="tone-grid" role="group" aria-labelledby="tone-label">
+                  <label class="tone-card">
+                    <input type="radio" name="tone" value="Professional" checked />
+                    <span class="tone-name">Professional</span>
+                  </label>
+                  <label class="tone-card">
+                    <input type="radio" name="tone" value="Friendly" />
+                    <span class="tone-name">Friendly</span>
+                  </label>
+                  <label class="tone-card">
+                    <input type="radio" name="tone" value="Confident" />
+                    <span class="tone-name">Confident</span>
+                  </label>
+                  <label class="tone-card">
+                    <input type="radio" name="tone" value="Formal" />
+                    <span class="tone-name">Formal</span>
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-group-set">
+              <legend class="fieldset-legend">Skills</legend>
+              <div class="form-group">
+                <label for="skills-input" class="form-label">Key Skills <span class="required" aria-hidden="true">*</span></label>
+                <div class="tags-container" id="tags-container" role="group" aria-label="Skills tags">
+                  <div class="tags-list" id="tags-list"></div>
+                  <input type="text" id="skills-input" class="tags-input" placeholder="Type a skill and press Enter…" aria-describedby="skills-hint" />
+                </div>
+                <span class="field-hint" id="skills-hint">Press Enter or comma to add a skill</span>
+                <span class="field-error" id="skills-error" role="alert"></span>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-group-set">
+              <legend class="fieldset-legend">Job Description</legend>
+              <div class="form-group">
+                <label for="job-description" class="form-label">Paste Job Description <span class="required" aria-hidden="true">*</span></label>
+                <div class="textarea-wrapper">
+                  <textarea id="job-description" name="jobDescription" class="form-textarea" placeholder="Paste the full job description here for best results…" rows="6" aria-required="true" aria-describedby="jd-counter"></textarea>
+                  <span class="char-counter" id="jd-counter">0 / 3000</span>
+                </div>
+                <span class="field-error" id="job-description-error" role="alert"></span>
+              </div>
+            </fieldset>
+
+            <fieldset class="form-group-set">
+              <legend class="fieldset-legend">Resume (Optional)</legend>
+              <div class="form-group">
+                <label class="form-label">Upload PDF Resume</label>
+                <div class="upload-zone" id="upload-zone" role="button" tabindex="0" aria-label="Upload PDF resume. Click or drag and drop." aria-describedby="upload-hint">
+                  <div class="upload-icon" aria-hidden="true">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                      <path d="M16 21V11M12 15l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M8 24h16a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                  </div>
+                  <p class="upload-text">Drag & drop your PDF or <span class="upload-link">browse</span></p>
+                  <p class="upload-sub" id="upload-hint">PDF files only, max 5MB</p>
+                  <input type="file" id="resume-file" accept=".pdf" class="file-input" aria-label="Resume PDF file input" />
+                </div>
+
+                <!-- File Preview -->
+                <div class="file-preview" id="file-preview" hidden>
+                  <div class="file-info">
+                    <span class="file-icon" aria-hidden="true">📄</span>
+                    <div>
+                      <p class="file-name" id="file-name-display"></p>
+                      <p class="file-size" id="file-size-display"></p>
+                    </div>
+                  </div>
+                  <button type="button" class="file-remove" id="remove-file" aria-label="Remove uploaded file">✕</button>
+                </div>
+
+                <div class="extracted-preview" id="extracted-preview" hidden>
+                  <div class="extracted-header">
+                    <span class="extracted-label">📝 Extracted Resume Text</span>
+                    <button type="button" class="btn-text" id="toggle-extracted">Hide</button>
+                  </div>
+                  <div class="extracted-content" id="extracted-content"></div>
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" id="reset-form-btn">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path d="M1 7a6 6 0 1 0 1.5-3.9M1 3v4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Reset Form
+              </button>
+              <button type="submit" class="btn-primary" id="generate-btn">
+                <span class="btn-label">Generate Cover Letter</span>
+                <span class="btn-loader" hidden aria-hidden="true">
+                  <span class="spinner"></span>
+                  Generating…
+                </span>
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+        <div class="output-panel" id="output-panel">
+          <div class="output-empty" id="output-empty">
+            <div class="empty-illustration" aria-hidden="true">
+              <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                <rect x="15" y="10" width="50" height="60" rx="4" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3"/>
+                <path d="M25 28h30M25 36h30M25 44h20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="60" cy="60" r="12" fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M56 60h8M60 56v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Your cover letter will appear here</h3>
+            <p>Fill in the form and click Generate to craft your personalized letter.</p>
+          </div>
+
+          <div class="output-skeleton" id="output-skeleton" hidden aria-label="Generating cover letter" aria-live="polite">
+            <div class="skeleton-header">
+              <div class="skeleton-line w-60"></div>
+              <div class="skeleton-line w-40"></div>
+            </div>
+            <div class="skeleton-body">
+              <div class="skeleton-line w-100"></div>
+              <div class="skeleton-line w-95"></div>
+              <div class="skeleton-line w-80"></div>
+              <div class="skeleton-line w-100"></div>
+              <div class="skeleton-line w-70"></div>
+            </div>
+            <div class="skeleton-body">
+              <div class="skeleton-line w-100"></div>
+              <div class="skeleton-line w-90"></div>
+              <div class="skeleton-line w-100"></div>
+              <div class="skeleton-line w-85"></div>
+              <div class="skeleton-line w-60"></div>
+            </div>
+            <div class="skeleton-body">
+              <div class="skeleton-line w-100"></div>
+              <div class="skeleton-line w-75"></div>
+              <div class="skeleton-line w-50"></div>
+            </div>
+            <div class="skeleton-footer">
+              <div class="skeleton-line w-30"></div>
+            </div>
+            <div class="skeleton-typing">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="skeleton-typing-text">Generating your cover letter…</span>
+            </div>
+          </div>
+
+          <div class="output-card" id="output-card" hidden>
+            <div class="output-card-header">
+              <div class="output-meta">
+                <span class="output-badge">✦ AI Generated</span>
+                <span class="output-stats" id="output-stats">0 words</span>
+              </div>
+              <div class="output-actions">
+                <button type="button" class="action-btn" id="copy-btn" title="Copy to clipboard" aria-label="Copy cover letter to clipboard">
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                    <rect x="4" y="4" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+                    <path d="M11 4V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                  </svg>
+                  Copy
+                </button>
+                <button type="button" class="action-btn" id="download-txt-btn" title="Download as TXT" aria-label="Download cover letter as text file">
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                    <path d="M7.5 10V2M4 7l3.5 3.5L11 7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                  </svg>
+                  TXT
+                </button>
+                <button type="button" class="action-btn" id="download-pdf-btn" title="Download as PDF" aria-label="Download cover letter as PDF">
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                    <path d="M3 2h7l3 3v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.3"/>
+                    <path d="M10 2v3h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                  </svg>
+                  PDF
+                </button>
+                <button type="button" class="action-btn action-btn--regen" id="regenerate-btn" title="Regenerate" aria-label="Regenerate cover letter">
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                    <path d="M1.5 7.5A6 6 0 0 1 13 5M13.5 7.5A6 6 0 0 1 2 10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M13 2v3h-3M2 13v-3h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Regenerate
+                </button>
+              </div>
+            </div>
+            <div class="output-body" id="output-body"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- HISTORY SECTION -->
+      <div class="history-section" id="history-section" hidden>
+        <div class="history-header">
+          <h3 class="history-title">Recent Generations</h3>
+          <button type="button" class="btn-text" id="clear-history-btn">Clear All</button>
+        </div>
+        <div class="history-grid" id="history-grid"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>CoverCraft AI — Built with ♥ and Gemini. <span class="footer-note">&copy; All Rights Reserved</span></p>
+  </footer>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
