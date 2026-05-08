@@ -23,6 +23,7 @@ export function extractLinksFromResume(text) {
   let github    = null;
   let portfolio = null;
 
+  // ── GitHub ────────────────────────────────────────────────────────────────
   const githubMatch = lowerText.match(
     /(?:https?:\/\/)?(?:www\.)?github\.com\/(?!assets\/|raw\/)[a-z0-9][-a-z0-9._]*(?:\/[^\s,;|"'<>\[\](){}]*)?/
   );
@@ -32,17 +33,20 @@ export function extractLinksFromResume(text) {
     github = normaliseUrl(raw);
   }
 
+  // ── Portfolio / personal site ─────────────────────────────────────────────
+  // Strategy A — explicit label
   const labelledMatch = text.match(
-    /(?:portfolio|website|personal\s+site|site|web|blog)\s*[:\--]\s*((?:https?:\/\/)?(?:www\.)?[a-z0-9][-a-z0-9.]+\.[a-z]{2,}(?:\/[^\s,;|"'<>\[\](){}]*)?)/i
+    /(?:portfolio|website|personal\s+site|site|web|blog)\s*[:\-–]\s*((?:https?:\/\/)?(?:www\.)?[^\s,;|"'<>\[\](){}]+)/i
   );
   if (labelledMatch) {
-    portfolio = normaliseUrl(labelledMatch[1].trim().replace(/[,;:!?)\]]+$/, ""));
+    portfolio = normaliseUrl(labelledMatch[1].trim().replace(/[.,;:!?)\]]+$/, ""));
   }
 
+  // Strategy B — full https:// URL that isn't GitHub
   if (!portfolio) {
     const fullUrlPattern = /https?:\/\/[^\s,;|"'<>\[\](){}]+/gi;
     for (const match of text.matchAll(fullUrlPattern)) {
-      const url   = match[0].replace(/[,;:!?)\]]+$/, "");
+      const url   = match[0].replace(/[.,;:!?)\]]+$/, "");
       const lower = url.toLowerCase();
       if (!lower.includes("github.com") && !lower.includes("linkedin.com")) {
         portfolio = url;
@@ -51,6 +55,7 @@ export function extractLinksFromResume(text) {
     }
   }
 
+  // Strategy C — bare domain with subdomain support
   if (!portfolio) {
     const EXCLUDED_KEYWORDS = [
       "linkedin", "github", "gmail", "yahoo",
